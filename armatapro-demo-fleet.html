@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArmataPro — Demo Fleet Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0C0F;--bg2:#111418;--bg3:#181C22;--bg4:#1E232B;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--text:#E8EAF0;--muted:#7A8190;--accent:#F5A623;--teal:#2DD4BF;--red:#E8543A;--blue:#3B82F6;--green:#22C55E;--purple:#8B5CF6}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.sidebar-logo{padding:22px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:white}
+.logo-text span{color:var(--accent)}
+.logo-badge{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(245,166,35,.15);color:var(--accent);border:1px solid rgba(245,166,35,.3);padding:3px 8px;border-radius:99px}
+.s-sect{padding:20px 14px 8px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .15s;margin:1px 0;font-size:.875rem;font-weight:500;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item.active{background:rgba(245,166,35,.1);color:var(--accent)}
+.nav-icon{width:18px;text-align:center;font-size:.9rem;flex-shrink:0}
+.sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:var(--bg3)}
+.user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--red));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:white;flex-shrink:0}
+.user-name{font-weight:600;font-size:.82rem}
+.user-role{font-size:.7rem;color:var(--muted)}
+.main{overflow:auto}
+.topbar{padding:18px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:10}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em}
+.page-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.topbar-actions{display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-weight:600;font-size:.8rem;cursor:pointer;border:none;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.btn-accent{background:var(--accent);color:#0A0C0F}
+.btn-accent:hover{opacity:.88}
+.btn-sm{padding:6px 12px;font-size:.75rem}
+.content{padding:28px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.stat-label{font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.03em;line-height:1;margin-bottom:4px}
+.stat-sub{font-size:.72rem;color:var(--muted)}
+.c-g{color:var(--green)}.c-a{color:var(--accent)}.c-r{color:var(--red)}.c-t{color:var(--teal)}.c-b{color:var(--blue)}.c-p{color:var(--purple)}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.panel-title{font-weight:600;font-size:.9rem}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-btn{padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:10px 14px;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 14px;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:99px}
+.b-ok{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.b-due{background:rgba(245,166,35,.12);color:var(--accent);border:1px solid rgba(245,166,35,.25)}
+.b-exp{background:rgba(232,84,58,.1);color:var(--red);border:1px solid rgba(232,84,58,.2)}
+.b-type{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
+.b-serv{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.2)}
+.unit-cell{display:flex;align-items:center;gap:10px}
+.unit-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.u-truk{background:rgba(245,166,35,.1)}
+.u-pick{background:rgba(45,212,191,.1)}
+.u-mini{background:rgba(59,130,246,.1)}
+.u-dump{background:rgba(232,84,58,.1)}
+.unit-nopol{font-weight:600;font-size:.875rem}
+.unit-type{font-size:.72rem;color:var(--muted)}
+.days-bar{width:120px}
+.days-label{font-size:.7rem;color:var(--muted);margin-bottom:4px}
+.bar-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.detail-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px}
+.detail-card h3{font-size:.8rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.detail-row:last-child{border-bottom:none}
+.detail-key{color:var(--muted);font-weight:400}
+.detail-val{font-weight:600}
+.progress-circle-wrap{display:flex;justify-content:center;padding:8px 0 16px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:16px;width:520px;max-width:95vw;overflow:hidden;transform:translateY(16px);transition:transform .25s}
+.overlay.show .modal{transform:none}
+.modal-head{padding:22px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.modal-body{padding:24px}
+.form-row{margin-bottom:16px}
+.form-label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select{width:100%;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.875rem;outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-select option{background:var(--bg3)}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 24px}
+.modal-tab{padding:12px 16px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.modal-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.toast{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:14px 20px;border-radius:10px;font-size:.875rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{transform:none;opacity:1}
+.km-badge{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:500;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div><div class="logo-text">Armata<span>Pro</span></div></div>
+      <div class="logo-badge">Fleet</div>
+    </div>
+    <div class="s-sect">Armada</div>
+    <a class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">📊</span>Dashboard</a>
+    <a class="nav-item" onclick="showPage('unit')"><span class="nav-icon">🚗</span>Data Unit</a>
+    <div class="s-sect">Monitoring</div>
+    <a class="nav-item" onclick="showPage('servis')"><span class="nav-icon">🔧</span>Report Servis</a>
+    <a class="nav-item" onclick="showPage('stnk')"><span class="nav-icon">📄</span>Monitor STNK & KIR</a>
+    <a class="nav-item" onclick="showPage('ban')"><span class="nav-icon">🚗</span>Jadwal Ganti Ban</a>
+    <div class="s-sect">Lainnya</div>
+    <a class="nav-item" href="demo-cuti.html"><span class="nav-icon">🏖️</span>Modul Cuti</a>
+    <a class="nav-item" href="index.html"><span class="nav-icon">🏠</span>Beranda</a>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-av">FM</div>
+        <div><div class="user-name">Fleet Manager</div><div class="user-role">Demo Mode</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">FLEET DASHBOARD</div>
+        <div class="page-sub" id="pageSub">Status seluruh armada kendaraan</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost">⬇ Export</button>
+        <button class="btn btn-accent" id="addBtn" onclick="openModal('servis')">+ Tambah Data</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total Unit Aktif</div><div class="stat-val c-t" id="s1">12</div><div class="stat-sub">Kendaraan terdaftar</div></div>
+          <div class="stat-card"><div class="stat-label">Due Servis (30hr)</div><div class="stat-val c-a" id="s2">3</div><div class="stat-sub">Perlu dijadwalkan</div></div>
+          <div class="stat-card"><div class="stat-label">STNK Hampir Expired</div><div class="stat-val c-a" id="s3">2</div><div class="stat-sub">Dalam 60 hari</div></div>
+          <div class="stat-card"><div class="stat-label">Ban Perlu Ganti</div><div class="stat-val c-r" id="s4">1</div><div class="stat-sub">Segera ditangani</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Status Armada — Semua Unit</span>
+            <div class="filters">
+              <button class="filter-btn active" onclick="filterDash('all',this)">Semua</button>
+              <button class="filter-btn" onclick="filterDash('danger',this)">🔴 Perlu Tindakan</button>
+              <button class="filter-btn" onclick="filterDash('warn',this)">🟡 Perhatikan</button>
+              <button class="filter-btn" onclick="filterDash('ok',this)">🟢 Normal</button>
+            </div>
+          </div>
+          <table class="tbl"><thead><tr><th>No. Polisi</th><th>Jenis</th><th>KM Saat Ini</th><th>Servis Terakhir</th><th>STNK Exp</th><th>KIR Exp</th><th>Status Ban</th><th>Overall</th><th>Aksi</th></tr></thead>
+          <tbody id="dashBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- DATA UNIT -->
+      <div id="page-unit" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Data Unit Kendaraan</span><button class="btn btn-accent btn-sm" onclick="openModal('unit')">+ Tambah Unit</button></div>
+          <table class="tbl"><thead><tr><th>No. Polisi</th><th>Jenis</th><th>Merk/Model</th><th>Tahun</th><th>KM Awal</th><th>KM Saat Ini</th><th>Status</th></tr></thead>
+          <tbody id="unitBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- SERVIS -->
+      <div id="page-servis" style="display:none">
+        <div class="grid-3">
+          <div class="stat-card"><div class="stat-label">Total Biaya Servis YTD</div><div class="stat-val c-a">47.2jt</div><div class="stat-sub">Tahun berjalan</div></div>
+          <div class="stat-card"><div class="stat-label">Servis Bulan Ini</div><div class="stat-val c-t">4</div><div class="stat-sub">Jadwal terlaksana</div></div>
+          <div class="stat-card"><div class="stat-label">Rata-rata Biaya</div><div class="stat-val c-g">3.9jt</div><div class="stat-sub">Per servis</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Riwayat & Jadwal Servis</span><button class="btn btn-accent btn-sm" onclick="openModal('servis')">+ Input Servis</button></div>
+          <table class="tbl"><thead><tr><th>No. Polisi</th><th>Jenis Servis</th><th>Tanggal</th><th>KM Servis</th><th>KM Selanjutnya</th><th>Biaya</th><th>Bengkel</th><th>Status</th></tr></thead>
+          <tbody id="servisBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- STNK -->
+      <div id="page-stnk" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Monitor STNK & KIR</span><button class="btn btn-accent btn-sm" onclick="openModal('stnk')">+ Update Dokumen</button></div>
+          <table class="tbl"><thead><tr><th>No. Polisi</th><th>Jenis</th><th>STNK Exp</th><th>Sisa Hari</th><th>KIR Exp</th><th>Sisa Hari</th><th>Status STNK</th><th>Status KIR</th></tr></thead>
+          <tbody id="stnkBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- BAN -->
+      <div id="page-ban" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Monitoring & Jadwal Ganti Ban</span><button class="btn btn-accent btn-sm" onclick="openModal('ban')">+ Input Ganti Ban</button></div>
+          <table class="tbl"><thead><tr><th>No. Polisi</th><th>Jenis</th><th>Ban Terakhir Ganti</th><th>KM Ganti</th><th>KM Saat Ini</th><th>KM Tersisa</th><th>Target Ganti</th><th>Status</th></tr></thead>
+          <tbody id="banBody"></tbody></table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modalTitle">INPUT DATA</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs" id="modalTabs"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-accent" onclick="submitModal()">Simpan Data</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const units = [
+  {nopol:'B 1234 AB',jenis:'Truk',merk:'Hino Ranger',tahun:2019,kmAwal:0,kmNow:87500,icon:'🚛',icc:'u-truk'},
+  {nopol:'D 5678 CD',jenis:'Pick-up',merk:'Mitsubishi L300',tahun:2021,kmAwal:0,kmNow:42300,icon:'🚐',icc:'u-pick'},
+  {nopol:'E 9012 EF',jenis:'Minibus',merk:'Toyota Hiace',tahun:2020,kmAwal:0,kmNow:65100,icon:'🚌',icc:'u-mini'},
+  {nopol:'B 3456 GH',jenis:'Truk',merk:'Isuzu Giga',tahun:2018,kmAwal:0,kmNow:112000,icon:'🚛',icc:'u-truk'},
+  {nopol:'F 7890 IJ',jenis:'Dump Truck',merk:'Hino 500',tahun:2017,kmAwal:0,kmNow:145000,icon:'🚜',icc:'u-dump'},
+  {nopol:'D 2345 KL',jenis:'Pick-up',merk:'Suzuki Carry',tahun:2022,kmAwal:0,kmNow:28000,icon:'🚐',icc:'u-pick'},
+];
+
+let servisData = [
+  {nopol:'B 1234 AB',jenis:'Servis Berkala',tgl:'2025-06-10',kmServis:85000,kmNext:90000,biaya:2500000,bengkel:'Hino Center',done:true},
+  {nopol:'D 5678 CD',jenis:'Ganti Oli + Filter',tgl:'2025-06-15',kmServis:40000,kmNext:45000,biaya:850000,bengkel:'Bengkel Maju',done:true},
+  {nopol:'E 9012 EF',jenis:'Tune Up',tgl:'2025-05-20',kmServis:62000,kmNext:67000,biaya:1800000,bengkel:'Toyota Res',done:true},
+  {nopol:'B 3456 GH',jenis:'Servis Berkala',tgl:'2025-04-08',kmServis:108000,kmNext:113000,biaya:3200000,bengkel:'Isuzu Center',done:false},
+  {nopol:'F 7890 IJ',jenis:'Ganti Oli Mesin',tgl:'2025-03-15',kmServis:142000,kmNext:147000,biaya:1200000,bengkel:'Bengkel Jaya',done:false},
+];
+
+const stnkData = [
+  {nopol:'B 1234 AB',jenis:'Truk',stnkExp:'2025-12-31',kirExp:'2025-10-15'},
+  {nopol:'D 5678 CD',jenis:'Pick-up',stnkExp:'2025-08-20',kirExp:'2025-07-30'},
+  {nopol:'E 9012 EF',jenis:'Minibus',stnkExp:'2025-03-10',kirExp:'2025-06-01'},
+  {nopol:'B 3456 GH',jenis:'Truk',stnkExp:'2026-01-15',kirExp:'2025-11-20'},
+  {nopol:'F 7890 IJ',jenis:'Dump Truck',stnkExp:'2025-09-05',kirExp:'2025-08-10'},
+  {nopol:'D 2345 KL',jenis:'Pick-up',stnkExp:'2026-03-20',kirExp:'2026-01-10'},
+];
+
+const banData = [
+  {nopol:'B 1234 AB',jenis:'Truk',lastGanti:'2024-11-10',kmGanti:72000,kmNow:87500,target:40000},
+  {nopol:'D 5678 CD',jenis:'Pick-up',lastGanti:'2024-08-20',kmGanti:22000,kmNow:42300,target:40000},
+  {nopol:'E 9012 EF',jenis:'Minibus',lastGanti:'2025-01-05',kmGanti:50000,kmNow:65100,target:50000},
+  {nopol:'B 3456 GH',jenis:'Truk',lastGanti:'2024-06-15',kmGanti:85000,kmNow:112000,target:40000},
+  {nopol:'F 7890 IJ',jenis:'Dump Truck',lastGanti:'2024-03-20',kmGanti:110000,kmNow:145000,target:50000},
+];
+
+const today = new Date();
+function daysTo(ds){const d=new Date(ds);return Math.round((d-today)/86400000)}
+function fmtDate(ds){if(!ds)return'—';const d=new Date(ds);return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}
+function fmtRp(n){return'Rp '+n.toLocaleString('id-ID')}
+function statusBadge(days){if(days<0)return'<span class="badge b-exp">Expired</span>';if(days<=30)return`<span class="badge b-due">Due ${days}hr</span>`;return'<span class="badge b-ok">OK</span>'}
+function unitCell(u){return`<div class="unit-cell"><div class="unit-icon ${u.icc}">${u.icon}</div><div><div class="unit-nopol">${u.nopol}</div><div class="unit-type">${u.merk||u.jenis}</div></div></div>`}
+function getUnit(nopol){return units.find(u=>u.nopol===nopol)||{jenis:'—',icon:'🚗',icc:'u-pick',merk:'—'}}
+
+function renderDash(filter='all'){
+  const rows = units.map(u=>{
+    const stnk=stnkData.find(s=>s.nopol===u.nopol);
+    const ban=banData.find(b=>b.nopol===u.nopol);
+    const serv=servisData.filter(s=>s.nopol===u.nopol).sort((a,b)=>new Date(b.tgl)-new Date(a.tgl))[0];
+    const stnkDays=stnk?daysTo(stnk.stnkExp):999;
+    const kirDays=stnk?daysTo(stnk.kirExp):999;
+    const banKmLeft=ban?ban.target-(u.kmNow-ban.kmGanti):9999;
+    const servKmLeft=serv?serv.kmNext-u.kmNow:9999;
+    const isDanger=stnkDays<0||kirDays<0||banKmLeft<0;
+    const isWarn=stnkDays<=60||kirDays<=60||banKmLeft<=5000||servKmLeft<=3000;
+    const overall=isDanger?'danger':isWarn?'warn':'ok';
+    if(filter!=='all'&&filter!==overall)return'';
+    const overallBadge=isDanger?'<span class="badge b-exp">⚠ Tindakan</span>':isWarn?'<span class="badge b-due">⚡ Perhatikan</span>':'<span class="badge b-ok">✓ Normal</span>';
+    return`<tr><td>${unitCell(u)}</td><td><span class="badge b-type">${u.jenis}</span></td><td><span class="km-badge">⊙ ${u.kmNow.toLocaleString('id-ID')} km</span></td><td>${serv?fmtDate(serv.tgl):'—'}</td><td>${stnk?fmtDate(stnk.stnkExp):'—'}</td><td>${stnk?fmtDate(stnk.kirExp):'—'}</td><td>${ban?statusBadge(Math.round(banKmLeft/100)):'-'}</td><td>${overallBadge}</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('servis','${u.nopol}')">+ Servis</button></td></tr>`;
+  }).join('');
+  document.getElementById('dashBody').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Tidak ada unit dengan status ini</td></tr>';
+}
+
+function filterDash(f,el){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderDash(f)}
+
+function renderUnit(){
+  document.getElementById('unitBody').innerHTML=units.map(u=>`<tr><td>${unitCell(u)}</td><td><span class="badge b-type">${u.jenis}</span></td><td>${u.merk}</td><td>${u.tahun}</td><td>${u.kmAwal.toLocaleString('id-ID')} km</td><td><span class="km-badge">⊙ ${u.kmNow.toLocaleString('id-ID')} km</span></td><td><span class="badge b-ok">Aktif</span></td></tr>`).join('');
+}
+
+function renderServis(){
+  document.getElementById('servisBody').innerHTML=[...servisData].sort((a,b)=>new Date(b.tgl)-new Date(a.tgl)).map(s=>{const u=getUnit(s.nopol);const left=s.kmNext-getUnit(s.nopol).kmNow;const pct=Math.max(0,Math.min(100,Math.round((1-(left/20000))*100)));return`<tr><td>${unitCell(u)}</td><td><span class="badge b-serv">${s.jenis}</span></td><td>${fmtDate(s.tgl)}</td><td>${s.kmServis.toLocaleString('id-ID')} km</td><td><div class="days-bar"><div class="days-label">${s.kmNext.toLocaleString('id-ID')} km</div><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${pct>80?'var(--red)':pct>50?'var(--accent)':'var(--teal)'}"></div></div></div></td><td style="font-weight:600;color:var(--accent)">${fmtRp(s.biaya)}</td><td>${s.bengkel}</td><td>${s.done?'<span class="badge b-ok">Selesai</span>':'<span class="badge b-due">Terjadwal</span>'}</td></tr>`}).join('');
+}
+
+function renderStnk(){
+  document.getElementById('stnkBody').innerHTML=stnkData.map(s=>{const u=getUnit(s.nopol);const sd=daysTo(s.stnkExp),kd=daysTo(s.kirExp);return`<tr><td>${unitCell(u)}</td><td><span class="badge b-type">${s.jenis}</span></td><td>${fmtDate(s.stnkExp)}</td><td style="font-weight:600;color:${sd<0?'var(--red)':sd<=60?'var(--accent)':'var(--green)'}">${sd<0?'Expired!':sd+' hari'}</td><td>${fmtDate(s.kirExp)}</td><td style="font-weight:600;color:${kd<0?'var(--red)':kd<=60?'var(--accent)':'var(--green)'}">${kd<0?'Expired!':kd+' hari'}</td><td>${statusBadge(sd)}</td><td>${statusBadge(kd)}</td></tr>`}).join('');
+}
+
+function renderBan(){
+  document.getElementById('banBody').innerHTML=banData.map(b=>{const u=getUnit(b.nopol);const used=b.kmNow-b.kmGanti;const left=b.target-used;const pct=Math.round((used/b.target)*100);return`<tr><td>${unitCell(u)}</td><td><span class="badge b-type">${b.jenis}</span></td><td>${fmtDate(b.lastGanti)}</td><td>${b.kmGanti.toLocaleString('id-ID')} km</td><td>${b.kmNow.toLocaleString('id-ID')} km</td><td style="font-weight:600;color:${left<0?'var(--red)':left<5000?'var(--accent)':'var(--green)'}">${left<0?'Lewat!':(left.toLocaleString('id-ID')+' km')}</td><td>${(b.kmGanti+b.target).toLocaleString('id-ID')} km</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar-wrap" style="width:80px"><div class="bar-fill" style="width:${Math.min(100,pct)}%;background:${pct>95?'var(--red)':pct>75?'var(--accent)':'var(--teal)'}"></div></div><span style="font-size:.75rem;color:var(--muted)">${pct}%</span></div></td></tr>`}).join('');
+}
+
+let modalMode='servis', prefillNopol='';
+const modalForms = {
+  servis:`<div class="form-row"><label class="form-label">Unit Kendaraan</label><select class="form-select" id="mNopol"><option value="">— Pilih Unit —</option>${units.map(u=>`<option value="${u.nopol}">${u.nopol} — ${u.jenis}</option>`).join('')}</select></div><div class="form-2col"><div class="form-row"><label class="form-label">Jenis Servis</label><select class="form-select" id="mJenis"><option>Servis Berkala</option><option>Ganti Oli + Filter</option><option>Tune Up</option><option>Ganti Busi</option><option>Perbaikan Rem</option><option>Servis AC</option></select></div><div class="form-row"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="mTgl"></div></div><div class="form-2col"><div class="form-row"><label class="form-label">KM Servis</label><input type="number" class="form-input" id="mKmS" placeholder="85000"></div><div class="form-row"><label class="form-label">KM Servis Berikutnya</label><input type="number" class="form-input" id="mKmN" placeholder="90000"></div></div><div class="form-2col"><div class="form-row"><label class="form-label">Biaya (Rp)</label><input type="number" class="form-input" id="mBiaya" placeholder="2500000"></div><div class="form-row"><label class="form-label">Nama Bengkel</label><input type="text" class="form-input" id="mBengkel" placeholder="Nama bengkel"></div></div>`,
+  stnk:`<div class="form-row"><label class="form-label">Unit Kendaraan</label><select class="form-select" id="mNopolS">${units.map(u=>`<option value="${u.nopol}">${u.nopol} — ${u.jenis}</option>`).join('')}</select></div><div class="form-2col"><div class="form-row"><label class="form-label">Tanggal STNK Baru</label><input type="date" class="form-input" id="mStnk"></div><div class="form-row"><label class="form-label">Tanggal KIR Baru</label><input type="date" class="form-input" id="mKir"></div></div>`,
+  ban:`<div class="form-row"><label class="form-label">Unit Kendaraan</label><select class="form-select" id="mNopolB">${units.map(u=>`<option value="${u.nopol}">${u.nopol} — ${u.jenis}</option>`).join('')}</select></div><div class="form-2col"><div class="form-row"><label class="form-label">Tanggal Ganti Ban</label><input type="date" class="form-input" id="mTglB"></div><div class="form-row"><label class="form-label">KM Saat Ganti</label><input type="number" class="form-input" id="mKmB" placeholder="85000"></div></div><div class="form-row"><label class="form-label">Target KM Ganti Berikutnya (km pakai)</label><input type="number" class="form-input" id="mTargetB" placeholder="40000" value="40000"></div>`,
+  unit:`<div class="form-2col"><div class="form-row"><label class="form-label">No. Polisi</label><input type="text" class="form-input" id="mNpNew" placeholder="B 1234 AB"></div><div class="form-row"><label class="form-label">Jenis Kendaraan</label><select class="form-select" id="mJenisU"><option>Truk</option><option>Pick-up</option><option>Minibus</option><option>Dump Truck</option><option>Sedan</option></select></div></div><div class="form-2col"><div class="form-row"><label class="form-label">Merk / Model</label><input type="text" class="form-input" id="mMerk" placeholder="Hino Ranger"></div><div class="form-row"><label class="form-label">Tahun</label><input type="number" class="form-input" id="mTahun" placeholder="2020"></div></div><div class="form-row"><label class="form-label">KM Awal (odometer saat didaftarkan)</label><input type="number" class="form-input" id="mKmAwal" placeholder="0"></div>`,
+};
+
+function openModal(mode, nopol=''){
+  modalMode=mode; prefillNopol=nopol;
+  const titles={servis:'INPUT LAPORAN SERVIS',stnk:'UPDATE STNK & KIR',ban:'INPUT GANTI BAN',unit:'TAMBAH UNIT BARU'};
+  document.getElementById('modalTitle').textContent=titles[mode]||'INPUT DATA';
+  document.getElementById('modalTabs').innerHTML='';
+  document.getElementById('modalBody').innerHTML=modalForms[mode]||'';
+  const today2=new Date().toISOString().split('T')[0];
+  if(mode==='servis'){document.getElementById('mTgl').value=today2;if(nopol){const sel=document.getElementById('mNopol');if(sel)[...sel.options].forEach(o=>{if(o.value===nopol)o.selected=true});}}
+  if(mode==='stnk'){if(nopol){const sel=document.getElementById('mNopolS');if(sel)[...sel.options].forEach(o=>{if(o.value===nopol)o.selected=true});}}
+  if(mode==='ban'){document.getElementById('mTglB').value=today2;}
+  document.getElementById('overlay').classList.add('show');
+}
+function closeOverlay(e){if(e.target===document.getElementById('overlay'))closeModal()}
+function closeModal(){document.getElementById('overlay').classList.remove('show')}
+
+function submitModal(){
+  if(modalMode==='servis'){
+    const nopol=document.getElementById('mNopol').value;
+    const jenis=document.getElementById('mJenis').value;
+    const tgl=document.getElementById('mTgl').value;
+    const kmS=+document.getElementById('mKmS').value;
+    const kmN=+document.getElementById('mKmN').value;
+    const biaya=+document.getElementById('mBiaya').value;
+    const bengkel=document.getElementById('mBengkel').value;
+    if(!nopol||!tgl){toast('⚠ Lengkapi field wajib!');return}
+    servisData.push({nopol,jenis,tgl,kmServis:kmS||0,kmNext:kmN||0,biaya:biaya||0,bengkel:bengkel||'—',done:true});
+    const u=units.find(x=>x.nopol===nopol);if(u&&kmS>u.kmNow)u.kmNow=kmS;
+    renderServis();renderDash();toast('✓ Data servis berhasil disimpan!');
+  } else if(modalMode==='stnk'){
+    const nopol=document.getElementById('mNopolS').value;
+    const stnk=document.getElementById('mStnk').value;
+    const kir=document.getElementById('mKir').value;
+    const idx=stnkData.findIndex(s=>s.nopol===nopol);
+    if(idx>=0){if(stnk)stnkData[idx].stnkExp=stnk;if(kir)stnkData[idx].kirExp=kir;}
+    renderStnk();renderDash();toast('✓ Data STNK/KIR diperbarui!');
+  } else if(modalMode==='ban'){
+    const nopol=document.getElementById('mNopolB').value;
+    const tgl=document.getElementById('mTglB').value;
+    const km=+document.getElementById('mKmB').value;
+    const target=+document.getElementById('mTargetB').value||40000;
+    const u=units.find(x=>x.nopol===nopol);
+    const idx=banData.findIndex(b=>b.nopol===nopol);
+    const entry={nopol,jenis:u?u.jenis:'—',lastGanti:tgl,kmGanti:km,kmNow:u?u.kmNow:km,target};
+    if(idx>=0)banData[idx]=entry;else banData.push(entry);
+    renderBan();renderDash();toast('✓ Data ganti ban disimpan!');
+  } else if(modalMode==='unit'){
+    const nopol=document.getElementById('mNpNew').value;
+    const jenis=document.getElementById('mJenisU').value;
+    const merk=document.getElementById('mMerk').value;
+    const tahun=+document.getElementById('mTahun').value;
+    const kmAwal=+document.getElementById('mKmAwal').value||0;
+    if(!nopol){toast('⚠ No. Polisi wajib diisi!');return}
+    units.push({nopol,jenis,merk:merk||jenis,tahun:tahun||2020,kmAwal,kmNow:kmAwal,icon:'🚗',icc:'u-pick'});
+    renderUnit();renderDash();toast('✓ Unit baru berhasil ditambahkan!');
+  }
+  closeModal();
+}
+
+function showPage(name){
+  ['dashboard','unit','servis','stnk','ban'].forEach(p=>{const el=document.getElementById('page-'+p);if(el)el.style.display='none'});
+  document.getElementById('page-'+name).style.display='';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const titles={dashboard:['FLEET DASHBOARD','Status seluruh armada kendaraan'],unit:['DATA UNIT','Daftar semua kendaraan terdaftar'],servis:['REPORT SERVIS','Riwayat dan jadwal servis kendaraan'],stnk:['MONITOR STNK & KIR','Status dokumen seluruh armada'],ban:['JADWAL GANTI BAN','Monitoring kondisi dan jadwal ban']};
+  document.getElementById('pageTitle').textContent=titles[name][0];
+  document.getElementById('pageSub').textContent=titles[name][1];
+  const modeMap={dashboard:'servis',unit:'unit',servis:'servis',stnk:'stnk',ban:'ban'};
+  document.getElementById('addBtn').onclick=()=>openModal(modeMap[name]);
+  if(name==='unit')renderUnit();
+  if(name==='servis')renderServis();
+  if(name==='stnk')renderStnk();
+  if(name==='ban')renderBan();
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+renderDash();
+</script>
+</body>
+</html>

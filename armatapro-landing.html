@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArmataPro — Kelola Armada, Mudah & Terukur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0A0C0F;
+  --bg2:     #111418;
+  --bg3:     #181C22;
+  --border:  rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.13);
+  --text:    #E8EAF0;
+  --muted:   #7A8190;
+  --accent:  #F5A623;
+  --accent2: #E8543A;
+  --teal:    #2DD4BF;
+  --blue:    #3B82F6;
+  --white:   #FFFFFF;
+  --r:       10px;
+  --r2:      16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size:200px;opacity:.5}
+
+section,header,footer,nav{position:relative;z-index:1}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;
+  background:rgba(10,12,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.08em;color:var(--white)}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:.875rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.btn-nav{background:var(--accent);color:#0A0C0F;padding:9px 20px;border-radius:99px;font-weight:600;font-size:.85rem;text-decoration:none;transition:opacity .2s,transform .15s}
+.btn-nav:hover{opacity:.88;transform:translateY(-1px);color:#0A0C0F}
+
+/* HERO */
+.hero{min-height:96vh;display:flex;flex-direction:column;justify-content:center;padding:80px 5% 60px;position:relative;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 40%,transparent 100%)}
+.hero-glow{position:absolute;top:-20%;left:10%;width:600px;height:600px;background:radial-gradient(circle,rgba(245,166,35,.06) 0%,transparent 70%);pointer-events:none}
+.hero-glow2{position:absolute;bottom:-10%;right:5%;width:400px;height:400px;background:radial-gradient(circle,rgba(45,212,191,.05) 0%,transparent 70%);pointer-events:none}
+
+.hero-tag{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,166,35,.3);background:rgba(245,166,35,.08);color:var(--accent);font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border-radius:99px;margin-bottom:28px}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.8s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,9vw,8rem);line-height:.95;letter-spacing:.02em;color:var(--white);margin-bottom:24px}
+h1 .line2{color:var(--accent);display:block}
+h1 .line3{color:var(--muted);display:block;font-size:clamp(2rem,4vw,3.8rem)}
+
+.hero-desc{font-size:1.05rem;color:var(--muted);max-width:520px;margin-bottom:40px;line-height:1.75;font-weight:300}
+.hero-desc strong{color:var(--text);font-weight:500}
+
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:64px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0A0C0F;padding:14px 28px;border-radius:99px;font-weight:700;font-size:.95rem;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 0 0 rgba(245,166,35,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(245,166,35,.35);color:#0A0C0F}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);padding:14px 24px;border-radius:99px;font-weight:500;font-size:.95rem;text-decoration:none;border:1px solid var(--border2);transition:border-color .2s,background .2s}
+.btn-outline:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+
+.hero-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;width:fit-content}
+.hero-stat{padding:20px 36px;text-align:center;border-right:1px solid var(--border)}
+.hero-stat:last-child{border-right:none}
+.hero-stat strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.04em;color:var(--accent);line-height:1}
+.hero-stat span{font-size:.75rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:4px;display:block}
+
+/* MARQUEE */
+.marquee-wrap{padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;background:var(--bg2)}
+.marquee-track{display:flex;gap:60px;white-space:nowrap;animation:marquee 22s linear infinite}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-item{font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* PRODUCTS */
+.products{padding:100px 5%}
+.section-pre{font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5vw,4rem);letter-spacing:.03em;color:var(--white);line-height:1.05;margin-bottom:16px}
+.section-sub{font-size:1rem;color:var(--muted);max-width:500px;font-weight:300;line-height:1.7}
+
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-top:60px;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.prod-card{background:var(--bg2);padding:40px;transition:background .2s;cursor:pointer;border:none;position:relative;overflow:hidden}
+.prod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.prod-card:hover{background:var(--bg3)}
+.prod-card:hover::before{transform:scaleX(1)}
+.prod-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:.04em;color:var(--border2);line-height:1;margin-bottom:16px;transition:color .2s}
+.prod-card:hover .prod-num{color:rgba(245,166,35,.2)}
+.prod-icon{font-size:1.6rem;margin-bottom:16px}
+.prod-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;color:var(--white);margin-bottom:10px}
+.prod-card p{font-size:.9rem;color:var(--muted);line-height:1.65;font-weight:300;margin-bottom:20px}
+.prod-tags{display:flex;gap:8px;flex-wrap:wrap}
+.prod-tag{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:99px;border:1px solid}
+.tag-a{color:var(--accent);border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.07)}
+.tag-t{color:var(--teal);border-color:rgba(45,212,191,.3);background:rgba(45,212,191,.07)}
+.tag-b{color:var(--blue);border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.07)}
+.prod-link{position:absolute;bottom:40px;right:40px;width:40px;height:40px;border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;transition:all .2s;text-decoration:none}
+.prod-card:hover .prod-link{background:var(--accent);border-color:var(--accent);color:#0A0C0F}
+
+/* HOW IT WORKS */
+.how{padding:100px 5%;background:var(--bg2)}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.how-steps{display:flex;flex-direction:column;gap:0}
+.how-step{display:flex;gap:24px;padding:28px 0;border-bottom:1px solid var(--border);position:relative}
+.how-step:last-child{border-bottom:none}
+.step-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--border2);letter-spacing:.04em;min-width:40px;line-height:1;padding-top:4px;transition:color .3s}
+.how-step:hover .step-num{color:var(--accent)}
+.step-content h3{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.step-content p{font-size:.875rem;color:var(--muted);font-weight:300;line-height:1.65}
+
+.how-visual{position:relative}
+.dashboard-mock{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.mock-bar{background:#0F1319;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.mock-dots{display:flex;gap:6px}
+.mock-dots span{width:9px;height:9px;border-radius:50%}
+.d1{background:#FF5F57}.d2{background:#FFBD2E}.d3{background:#27C940}
+.mock-title{font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;flex:1;text-align:center}
+.mock-body{padding:20px}
+.mock-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.kpi-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;line-height:1}
+.kpi-ok{color:var(--teal)}.kpi-warn{color:var(--accent)}.kpi-danger{color:var(--accent2)}
+.kpi-sub{font-size:.65rem;color:var(--muted);margin-top:3px}
+.mock-table{width:100%;border-collapse:collapse;font-size:.75rem}
+.mock-table th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;letter-spacing:.04em;border-bottom:1px solid var(--border);font-size:.68rem;text-transform:uppercase}
+.mock-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+.mock-table tr:last-child td{border-bottom:none}
+.status-ok{color:var(--teal);font-weight:600;font-size:.7rem}.status-warn{color:var(--accent);font-weight:600;font-size:.7rem}.status-due{color:var(--accent2);font-weight:600;font-size:.7rem}
+
+/* PRICING */
+.pricing{padding:100px 5%}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:60px}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:36px;position:relative;transition:border-color .2s}
+.price-card:hover{border-color:var(--border2)}
+.price-card.hot{border-color:rgba(245,166,35,.4);background:var(--bg3)}
+.price-card.hot::before{content:'TERLARIS';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0A0C0F;font-size:.65rem;font-weight:700;letter-spacing:.1em;padding:4px 16px;border-radius:99px;white-space:nowrap}
+.price-name{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+.price-val{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:.02em;color:var(--white);line-height:1;margin-bottom:4px}
+.price-val small{font-size:1.2rem;color:var(--muted)}
+.price-period{font-size:.78rem;color:var(--muted);margin-bottom:28px}
+.price-list{list-style:none;margin-bottom:32px}
+.price-list li{font-size:.875rem;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;font-weight:300}
+.price-list li:last-child{border-bottom:none}
+.price-list li::before{content:'→';color:var(--accent);flex-shrink:0}
+.btn-price{display:block;text-align:center;padding:13px;border-radius:99px;font-weight:600;font-size:.9rem;text-decoration:none;transition:all .2s;border:1px solid var(--border2);color:var(--text);background:transparent;cursor:pointer}
+.btn-price:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)}
+.btn-price-hot{background:var(--accent);color:#0A0C0F;border-color:var(--accent)}
+.btn-price-hot:hover{opacity:.88;transform:translateY(-1px)}
+
+/* DEMO CTA */
+.demo-cta{padding:80px 5%;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.demo-cta-inner{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+.demo-cta h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:.03em;color:var(--white);line-height:1.1;margin-bottom:10px}
+.demo-cta p{font-size:1rem;color:var(--muted);font-weight:300}
+.demo-btns{display:flex;flex-direction:column;gap:12px;min-width:200px}
+.btn-demo{display:block;text-align:center;padding:13px 24px;border-radius:var(--r);font-weight:600;font-size:.875rem;text-decoration:none;transition:all .2s;white-space:nowrap}
+.btn-demo-cuti{background:rgba(45,212,191,.12);color:var(--teal);border:1px solid rgba(45,212,191,.3)}
+.btn-demo-cuti:hover{background:rgba(45,212,191,.2)}
+.btn-demo-fleet{background:rgba(245,166,35,.12);color:var(--accent);border:1px solid rgba(245,166,35,.3)}
+.btn-demo-fleet:hover{background:rgba(245,166,35,.2)}
+
+/* FOOTER */
+footer{padding:60px 5% 32px;border-top:1px solid var(--border)}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.08em;color:var(--white);margin-bottom:12px;display:block}
+.footer-logo span{color:var(--accent)}
+.footer-desc{font-size:.85rem;color:var(--muted);line-height:1.65;font-weight:300;max-width:260px}
+.footer-col h4{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.footer-col a{display:block;font-size:.875rem;color:var(--muted);text-decoration:none;margin-bottom:10px;transition:color .2s;font-weight:300}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom span{font-size:.78rem;color:var(--muted)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+.d1s{transition-delay:.1s}.d2s{transition-delay:.2s}.d3s{transition-delay:.3s}
+
+@media(max-width:900px){
+  .products-grid,.how-grid,.pricing-grid,.footer-top{grid-template-columns:1fr}
+  .demo-cta-inner{grid-template-columns:1fr}
+  .hero-stats{flex-wrap:wrap}
+  nav .nav-links a:not(.btn-nav){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Armata<span>Pro</span></div>
+  <div class="nav-links">
+    <a href="#products">Produk</a>
+    <a href="#how">Cara Kerja</a>
+    <a href="#pricing">Harga</a>
+    <a href="demo-fleet.html" class="btn-nav">Coba Demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-tag">Solusi Digital Operasional &amp; HR</div>
+  <h1>KELOLA<span class="line2">ARMADA</span><span class="line3">MUDAH &amp; TERUKUR.</span></h1>
+  <p class="hero-desc">Dari <strong>manajemen cuti karyawan</strong> sampai <strong>monitoring servis, STNK, dan ban</strong> — semua dalam satu ekosistem Google Sheets yang terasa seperti aplikasi sungguhan.</p>
+  <div class="hero-btns">
+    <a href="demo-fleet.html" class="btn-primary">▶ Coba Demo Fleet</a>
+    <a href="demo-cuti.html" class="btn-outline">Demo Cuti Karyawan</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>4</strong><span>Modul Terintegrasi</span></div>
+    <div class="hero-stat"><strong>100%</strong><span>Berbasis Google Sheets</span></div>
+    <div class="hero-stat"><strong>0</strong><span>Biaya Server</span></div>
+    <div class="hero-stat"><strong>∞</strong><span>User per Lisensi</span></div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span>Manajemen Cuti</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Report Service Kendaraan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Monitoring STNK & KIR</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Jadwal Ganti Ban</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Checklist K3</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Reminder Otomatis</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Dashboard Real-Time</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Manajemen Cuti</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Report Service Kendaraan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Monitoring STNK & KIR</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Jadwal Ganti Ban</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Checklist K3</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Reminder Otomatis</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Dashboard Real-Time</span>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="reveal">
+    <div class="section-pre">Produk Kami</div>
+    <h2 class="section-title">SEMUA YANG KAMU<br>BUTUHKAN</h2>
+    <p class="section-sub">Empat modul siap pakai, bisa dibeli satuan atau bundle hemat.</p>
+  </div>
+  <div class="products-grid reveal">
+    <div class="prod-card" onclick="location.href='demo-cuti.html'">
+      <div class="prod-num">01</div>
+      <div class="prod-icon">🏖️</div>
+      <h3>Manajemen Cuti Karyawan</h3>
+      <p>Form pengajuan cuti digital, kalender visual, sisa jatah otomatis dihitung, approval workflow, rekap per departemen.</p>
+      <div class="prod-tags"><span class="prod-tag tag-t">HR & Admin</span><span class="prod-tag tag-a">Google Sheets</span></div>
+      <a class="prod-link" href="demo-cuti.html">→</a>
+    </div>
+    <div class="prod-card" onclick="location.href='demo-fleet.html'">
+      <div class="prod-num">02</div>
+      <div class="prod-icon">🔧</div>
+      <h3>Report Service Kendaraan</h3>
+      <p>Riwayat servis lengkap per unit, jadwal perawatan berkala, estimasi biaya, notifikasi sebelum jatuh tempo.</p>
+      <div class="prod-tags"><span class="prod-tag tag-a">Fleet Manager</span><span class="prod-tag tag-b">Auto-reminder</span></div>
+      <a class="prod-link" href="demo-fleet.html">→</a>
+    </div>
+    <div class="prod-card" onclick="location.href='demo-fleet.html'">
+      <div class="prod-num">03</div>
+      <div class="prod-icon">📄</div>
+      <h3>Monitor STNK & KIR</h3>
+      <p>Semua dokumen kendaraan terpusat. Reminder H-30 dan H-7 otomatis, status expired langsung kelihatan di dashboard.</p>
+      <div class="prod-tags"><span class="prod-tag tag-a">Operasional</span><span class="prod-tag tag-t">Dashboard</span></div>
+      <a class="prod-link" href="demo-fleet.html">→</a>
+    </div>
+    <div class="prod-card" onclick="location.href='demo-fleet.html'">
+      <div class="prod-num">04</div>
+      <div class="prod-icon">🚗</div>
+      <h3>Jadwal Ganti Ban</h3>
+      <p>Tracking kilometer per unit, jadwal rotasi dan penggantian ban, histori lengkap, estimasi biaya maintenance tahunan.</p>
+      <div class="prod-tags"><span class="prod-tag tag-b">Maintenance</span><span class="prod-tag tag-a">Cost Tracking</span></div>
+      <a class="prod-link" href="demo-fleet.html">→</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="reveal">
+    <div class="section-pre">Cara Kerja</div>
+    <h2 class="section-title">BELI SEKALI,<br>LANGSUNG JALAN</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-steps reveal">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Beli & Terima File</h3>
+          <p>Bayar sekali, dapat file Google Sheets / Excel. Langsung dikirim ke email dalam hitungan menit.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Salin ke Google Drive</h3>
+          <p>Upload ke Google Drive kamu. Bagikan ke tim — tidak ada batasan jumlah user.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Isi Data Kendaraan / Karyawan</h3>
+          <p>Input data satu kali. Dashboard otomatis terhitung, status otomatis berubah, reminder langsung aktif.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Pantau dari Mana Saja</h3>
+          <p>Akses lewat HP atau laptop. Atasan bisa lihat dashboard real-time kapanpun, dimanapun.</p>
+        </div>
+      </div>
+    </div>
+    <div class="how-visual reveal d2s">
+      <div class="dashboard-mock">
+        <div class="mock-bar">
+          <div class="mock-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <div class="mock-title">ArmataPro — Fleet Dashboard</div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-kpi">
+            <div class="kpi-card"><div class="kpi-label">Total Unit</div><div class="kpi-val kpi-ok">12</div><div class="kpi-sub">Kendaraan aktif</div></div>
+            <div class="kpi-card"><div class="kpi-label">Servis Due</div><div class="kpi-val kpi-warn">3</div><div class="kpi-sub">Dalam 30 hari</div></div>
+            <div class="kpi-card"><div class="kpi-label">STNK Expired</div><div class="kpi-val kpi-danger">1</div><div class="kpi-sub">Segera perpanjang</div></div>
+          </div>
+          <table class="mock-table">
+            <thead><tr><th>No. Polisi</th><th>Jenis</th><th>Servis</th><th>STNK</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>B 1234 AB</td><td>Truk</td><td>15 Agt</td><td>Des 2025</td><td class="status-ok">OK</td></tr>
+              <tr><td>D 5678 CD</td><td>Pick-up</td><td>2 Jul</td><td>Jul 2025</td><td class="status-warn">Due Soon</td></tr>
+              <tr><td>E 9012 EF</td><td>Minibus</td><td>20 Jun</td><td>Mar 2025</td><td class="status-due">Expired!</td></tr>
+              <tr><td>B 3456 GH</td><td>Truk</td><td>10 Sep</td><td>Nov 2025</td><td class="status-ok">OK</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="reveal">
+    <div class="section-pre">Harga</div>
+    <h2 class="section-title">TRANSPARAN,<br>TANPA KEJUTAN</h2>
+    <p class="section-sub">Bayar sekali. Tidak ada biaya langganan bulanan.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card reveal d1s">
+      <div class="price-name">STARTER</div>
+      <div class="price-val"><small>Rp </small>99K</div>
+      <div class="price-period">1 modul pilihan — bayar sekali</div>
+      <ul class="price-list">
+        <li>1 modul (Cuti atau Fleet)</li>
+        <li>File Excel + Google Sheets</li>
+        <li>Dashboard otomatis</li>
+        <li>Panduan setup PDF</li>
+        <li>Update 6 bulan</li>
+      </ul>
+      <button class="btn-price">Beli Sekarang</button>
+    </div>
+    <div class="price-card hot reveal d2s">
+      <div class="price-name">PRO BUNDLE</div>
+      <div class="price-val"><small>Rp </small>249K</div>
+      <div class="price-period">Semua 4 modul — bayar sekali</div>
+      <ul class="price-list">
+        <li>4 modul lengkap (Cuti + Fleet)</li>
+        <li>Dashboard terintegrasi</li>
+        <li>Template kustomisasi logo</li>
+        <li>Panduan video 30 menit</li>
+        <li>Update selamanya</li>
+        <li>Konsultasi WhatsApp 30 hari</li>
+      </ul>
+      <button class="btn-price btn-price-hot">Beli Sekarang</button>
+    </div>
+    <div class="price-card reveal d3s">
+      <div class="price-name">ENTERPRISE</div>
+      <div class="price-val"><small>Rp </small>599K</div>
+      <div class="price-period">Custom untuk perusahaanmu</div>
+      <ul class="price-list">
+        <li>Semua fitur Pro Bundle</li>
+        <li>Kustomisasi penuh (nama, logo, warna)</li>
+        <li>Setup & training langsung</li>
+        <li>Integrasi ke sistem existing</li>
+        <li>Support prioritas 1 tahun</li>
+        <li>Konsultasi tak terbatas</li>
+      </ul>
+      <button class="btn-price">Hubungi Kami</button>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO CTA -->
+<section class="demo-cta">
+  <div class="demo-cta-inner reveal">
+    <div>
+      <h2>COBA DULU,<br>BARU BELI.</h2>
+      <p>Demo interaktif gratis — tidak perlu daftar, tidak perlu kartu kredit.</p>
+    </div>
+    <div class="demo-btns">
+      <a href="demo-cuti.html" class="btn-demo btn-demo-cuti">🏖️ Demo Manajemen Cuti</a>
+      <a href="demo-fleet.html" class="btn-demo btn-demo-fleet">🚗 Demo Fleet Manager</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <span class="footer-logo">Armata<span>Pro</span></span>
+      <p class="footer-desc">Solusi administrasi digital berbasis Google Sheets untuk operasional armada dan HR yang lebih terstruktur.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Produk</h4>
+      <a href="#">Manajemen Cuti</a>
+      <a href="#">Report Servis</a>
+      <a href="#">Monitor STNK</a>
+      <a href="#">Jadwal Ban</a>
+    </div>
+    <div class="footer-col">
+      <h4>Demo</h4>
+      <a href="demo-cuti.html">Demo Cuti</a>
+      <a href="demo-fleet.html">Demo Fleet</a>
+    </div>
+    <div class="footer-col">
+      <h4>Kontak</h4>
+      <a href="#">WhatsApp</a>
+      <a href="#">Email</a>
+      <a href="#">Lynk.id/armatapro</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 ArmataPro. Hak Cipta Dilindungi.</span>
+    <span>Dibuat dengan ☕ di Indonesia</span>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

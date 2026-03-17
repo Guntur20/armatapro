@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArmataPro — Demo Manajemen Cuti Karyawan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0C0F;--bg2:#111418;--bg3:#181C22;--bg4:#1E232B;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--text:#E8EAF0;--muted:#7A8190;--accent:#2DD4BF;--accent2:#F5A623;--red:#E8543A;--blue:#3B82F6;--green:#22C55E}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:0;display:flex;flex-direction:column}
+.sidebar-logo{padding:22px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:white}
+.logo-text span{color:var(--accent)}
+.logo-badge{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(45,212,191,.15);color:var(--accent);border:1px solid rgba(45,212,191,.3);padding:3px 8px;border-radius:99px}
+.sidebar-section{padding:20px 14px 8px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .15s;margin:1px 0;font-size:.875rem;font-weight:500;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item.active{background:rgba(45,212,191,.1);color:var(--accent)}
+.nav-icon{width:18px;text-align:center;font-size:.9rem;flex-shrink:0}
+.sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:var(--bg3)}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3B82F6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:white;flex-shrink:0}
+.user-name{font-weight:600;font-size:.82rem;color:var(--text)}
+.user-role{font-size:.7rem;color:var(--muted)}
+
+/* MAIN */
+.main{overflow:auto;background:var(--bg)}
+.topbar{padding:18px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:10}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;color:var(--text)}
+.page-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-weight:600;font-size:.8rem;cursor:pointer;border:none;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.btn-accent{background:var(--accent);color:#0A0C0F}
+.btn-accent:hover{opacity:.88}
+.content{padding:28px}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.stat-label{font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.03em;line-height:1;margin-bottom:4px}
+.stat-sub{font-size:.72rem;color:var(--muted)}
+.c-green{color:var(--green)}.c-accent{color:var(--accent)}.c-orange{color:var(--accent2)}.c-red{color:var(--red)}
+
+/* GRID 2 COL */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-weight:600;font-size:.9rem;color:var(--text)}
+.panel-action{font-size:.75rem;color:var(--accent);cursor:pointer;font-weight:500}
+.panel-body{padding:20px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:10px 14px;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 14px;font-size:.82rem;color:var(--text);border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:99px;letter-spacing:.04em}
+.b-pending{background:rgba(245,166,35,.12);color:var(--accent2);border:1px solid rgba(245,166,35,.25)}
+.b-approved{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.b-rejected{background:rgba(232,84,58,.1);color:var(--red);border:1px solid rgba(232,84,58,.2)}
+.b-annual{background:rgba(45,212,191,.1);color:var(--accent)}
+.b-sick{background:rgba(232,84,58,.1);color:var(--red)}
+.b-personal{background:rgba(59,130,246,.1);color:var(--blue)}
+.emp-row{display:flex;align-items:center;gap:10px}
+.emp-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:white;flex-shrink:0}
+.av-t{background:linear-gradient(135deg,#2DD4BF,#3B82F6)}
+.av-o{background:linear-gradient(135deg,#F5A623,#E8543A)}
+.av-p{background:linear-gradient(135deg,#8B5CF6,#EC4899)}
+.av-g{background:linear-gradient(135deg,#22C55E,#3B82F6)}
+
+/* JATAH BAR */
+.jatah-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.jatah-row:last-child{border-bottom:none}
+.jatah-emp{flex:1;min-width:0}
+.jatah-name{font-weight:500;font-size:.85rem;color:var(--text);margin-bottom:2px}
+.jatah-dept{font-size:.72rem;color:var(--muted)}
+.jatah-bar-wrap{flex:2;height:6px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.jatah-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .6s ease}
+.jatah-num{font-size:.78rem;font-weight:600;color:var(--text);white-space:nowrap;min-width:48px;text-align:right}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-head{font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px 0}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.75rem;border-radius:6px;cursor:pointer;transition:background .15s;color:var(--muted);position:relative}
+.cal-day:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.cal-day.today{background:rgba(45,212,191,.15);color:var(--accent);font-weight:700}
+.cal-day.has-cuti{color:var(--text)}
+.cal-day.has-cuti::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent2)}
+.cal-month{font-weight:600;font-size:.9rem;color:var(--text);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.cal-nav{background:none;border:1px solid var(--border2);color:var(--muted);width:26px;height:26px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s}
+.cal-nav:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+
+/* FORM MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:16px;width:480px;max-width:95vw;overflow:hidden;transform:translateY(16px);transition:transform .25s}
+.overlay.show .modal{transform:translateY(0)}
+.modal-head{padding:22px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;transition:color .15s}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:24px}
+.form-row{margin-bottom:18px}
+.form-label{display:block;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.form-input,.form-select{width:100%;background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.875rem;outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-select option{background:var(--bg3)}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-textarea{min-height:80px;resize:vertical}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--accent);padding:14px 20px;border-radius:10px;font-size:.875rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{transform:none;opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div>
+        <div class="logo-text">Armata<span>Pro</span></div>
+      </div>
+      <div class="logo-badge">HR Module</div>
+    </div>
+    <div class="sidebar-section">Menu</div>
+    <a class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">📊</span>Dashboard</a>
+    <a class="nav-item" onclick="showPage('pengajuan')"><span class="nav-icon">📋</span>Pengajuan Cuti</a>
+    <a class="nav-item" onclick="showPage('kalender')"><span class="nav-icon">📅</span>Kalender Cuti</a>
+    <a class="nav-item" onclick="showPage('karyawan')"><span class="nav-icon">👥</span>Data Karyawan</a>
+    <div class="sidebar-section">Laporan</div>
+    <a class="nav-item" onclick="showPage('rekap')"><span class="nav-icon">📈</span>Rekap Bulanan</a>
+    <a class="nav-item" href="index.html" style="margin-top:auto"><span class="nav-icon">🏠</span>Kembali ke Beranda</a>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-avatar">AH</div>
+        <div><div class="user-name">Admin HR</div><div class="user-role">HR Manager · Demo</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">DASHBOARD CUTI</div>
+        <div class="page-sub" id="pageSub">Ringkasan status cuti karyawan bulan ini</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost">⬇ Export</button>
+        <button class="btn btn-accent" onclick="openModal()">+ Ajukan Cuti</button>
+      </div>
+    </div>
+
+    <div class="content" id="pageContent">
+      <!-- DASHBOARD -->
+      <div id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Pengajuan Masuk</div><div class="stat-val c-orange" id="statPending">4</div><div class="stat-sub">Menunggu persetujuan</div></div>
+          <div class="stat-card"><div class="stat-label">Disetujui Bulan Ini</div><div class="stat-val c-green" id="statApproved">7</div><div class="stat-sub">Total hari cuti berjalan</div></div>
+          <div class="stat-card"><div class="stat-label">Karyawan Cuti Hari Ini</div><div class="stat-val c-accent" id="statToday">2</div><div class="stat-sub">Sedang tidak masuk</div></div>
+          <div class="stat-card"><div class="stat-label">Rata-rata Jatah Tersisa</div><div class="stat-val c-green" id="statAvg">8.4</div><div class="stat-sub">Hari per karyawan</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Pengajuan Terbaru</span><span class="panel-action" onclick="showPage('pengajuan')">Lihat semua →</span></div>
+            <table class="tbl" id="recentTable">
+              <thead><tr><th>Karyawan</th><th>Jenis</th><th>Durasi</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody id="recentBody"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Sisa Jatah Cuti</span><span class="panel-action">12 Hari / Tahun</span></div>
+            <div class="panel-body" id="jatahList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENGAJUAN -->
+      <div id="page-pengajuan" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Semua Pengajuan Cuti</span><span class="panel-action" onclick="openModal()">+ Tambah Baru</span></div>
+          <table class="tbl">
+            <thead><tr><th>Karyawan</th><th>Jenis Cuti</th><th>Tanggal Mulai</th><th>Tanggal Selesai</th><th>Durasi</th><th>Alasan</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="allBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KALENDER -->
+      <div id="page-kalender" style="display:none">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-body">
+              <div class="cal-month">
+                <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+                <span id="calMonthLabel"></span>
+                <button class="cal-nav" onclick="changeMonth(1)">›</button>
+              </div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Cuti Bulan Ini</span></div>
+            <div class="panel-body" id="calEventList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KARYAWAN -->
+      <div id="page-karyawan" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Data Karyawan & Jatah Cuti</span></div>
+          <table class="tbl">
+            <thead><tr><th>Karyawan</th><th>Departemen</th><th>Jatah Total</th><th>Terpakai</th><th>Sisa</th><th>Progress</th></tr></thead>
+            <tbody id="karyawanBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REKAP -->
+      <div id="page-rekap" style="display:none">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total Hari Cuti (Thn)</div><div class="stat-val c-accent">47</div><div class="stat-sub">Semua karyawan</div></div>
+          <div class="stat-card"><div class="stat-label">Cuti Tahunan</div><div class="stat-val c-green">32</div><div class="stat-sub">hari dipakai</div></div>
+          <div class="stat-card"><div class="stat-label">Cuti Sakit</div><div class="stat-val c-red">11</div><div class="stat-sub">hari dipakai</div></div>
+          <div class="stat-card"><div class="stat-label">Cuti Pribadi</div><div class="stat-val c-orange">4</div><div class="stat-sub">hari dipakai</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title">Rekap per Departemen</span></div>
+          <table class="tbl">
+            <thead><tr><th>Departemen</th><th>Jumlah Karyawan</th><th>Total Cuti Dipakai</th><th>Rata-rata per Orang</th><th>Sisa Jatah Rata-rata</th></tr></thead>
+            <tbody>
+              <tr><td>Operasional</td><td>8 orang</td><td>22 hari</td><td>2.75 hari</td><td>9.25 hari</td></tr>
+              <tr><td>Finance</td><td>4 orang</td><td>12 hari</td><td>3.0 hari</td><td>9.0 hari</td></tr>
+              <tr><td>HR & Admin</td><td>3 orang</td><td>8 hari</td><td>2.67 hari</td><td>9.33 hari</td></tr>
+              <tr><td>Teknik</td><td>6 orang</td><td>5 hari</td><td>0.83 hari</td><td>11.17 hari</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL PENGAJUAN -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">AJUKAN CUTI BARU</span>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">Nama Karyawan</label><select class="form-select" id="fKaryawan"><option value="">— Pilih Karyawan —</option></select></div>
+      <div class="form-row"><label class="form-label">Jenis Cuti</label>
+        <select class="form-select" id="fJenis">
+          <option value="">— Pilih Jenis —</option>
+          <option value="Tahunan">Cuti Tahunan</option>
+          <option value="Sakit">Cuti Sakit</option>
+          <option value="Pribadi">Cuti Pribadi</option>
+          <option value="Melahirkan">Cuti Melahirkan</option>
+        </select>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label class="form-label">Tanggal Mulai</label><input type="date" class="form-input" id="fMulai"></div>
+        <div class="form-row"><label class="form-label">Tanggal Selesai</label><input type="date" class="form-input" id="fSelesai"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Alasan / Keterangan</label><textarea class="form-input form-textarea" id="fAlasan" placeholder="Tuliskan alasan cuti..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModalDirect()">Batal</button>
+      <button class="btn btn-accent" onclick="submitCuti()">Kirim Pengajuan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const karyawan = [
+  {id:1,nama:'Budi Santoso',dept:'Operasional',jatah:12,terpakai:4,av:'BS',avc:'av-t'},
+  {id:2,nama:'Dewi Rahayu',dept:'Finance',jatah:12,terpakai:6,av:'DR',avc:'av-o'},
+  {id:3,nama:'Ricky Firmansyah',dept:'Teknik',jatah:12,terpakai:2,av:'RF',avc:'av-p'},
+  {id:4,nama:'Sari Novita',dept:'HR & Admin',jatah:12,terpakai:8,av:'SN',avc:'av-g'},
+  {id:5,nama:'Andi Kurniawan',dept:'Operasional',jatah:12,terpakai:3,av:'AK',avc:'av-t'},
+  {id:6,nama:'Maya Putri',dept:'Finance',jatah:12,terpakai:10,av:'MP',avc:'av-o'},
+];
+
+let pengajuan = [
+  {id:1,kid:1,jenis:'Tahunan',mulai:'2025-07-10',selesai:'2025-07-12',alasan:'Acara keluarga',status:'Approved'},
+  {id:2,kid:2,jenis:'Sakit',mulai:'2025-07-05',selesai:'2025-07-06',alasan:'Demam',status:'Approved'},
+  {id:3,kid:4,jenis:'Tahunan',mulai:'2025-07-15',selesai:'2025-07-19',alasan:'Liburan',status:'Pending'},
+  {id:4,kid:3,jenis:'Pribadi',mulai:'2025-07-08',selesai:'2025-07-08',alasan:'Urusan pribadi',status:'Approved'},
+  {id:5,kid:6,jenis:'Sakit',mulai:'2025-07-18',selesai:'2025-07-20',alasan:'Rawat inap',status:'Pending'},
+  {id:6,kid:5,jenis:'Tahunan',mulai:'2025-07-22',selesai:'2025-07-25',alasan:'Mudik',status:'Pending'},
+  {id:7,kid:1,jenis:'Pribadi',mulai:'2025-07-30',selesai:'2025-07-30',alasan:'Pernikahan saudara',status:'Pending'},
+];
+
+let pidCounter = 8;
+
+function dur(m,s){const a=new Date(m),b=new Date(s);return Math.round((b-a)/(86400000))+1}
+function fmtDate(d){if(!d)return '-';const x=new Date(d);return x.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}
+function getK(id){return karyawan.find(k=>k.id===id)}
+function badgeStatus(s){if(s==='Approved')return'<span class="badge b-approved">✓ Disetujui</span>';if(s==='Rejected')return'<span class="badge b-rejected">✗ Ditolak</span>';return'<span class="badge b-pending">⏳ Pending</span>'}
+function badgeJenis(j){if(j==='Tahunan')return`<span class="badge b-annual">${j}</span>`;if(j==='Sakit')return`<span class="badge b-sick">${j}</span>`;return`<span class="badge b-personal">${j}</span>`}
+function empCell(k){return`<div class="emp-row"><div class="emp-av ${k.avc}">${k.av}</div><div><div style="font-weight:500">${k.nama}</div><div style="font-size:.72rem;color:var(--muted)">${k.dept}</div></div></div>`}
+
+function renderRecent(){
+  const body=document.getElementById('recentBody');
+  const last5=pengajuan.slice(-5).reverse();
+  body.innerHTML=last5.map(p=>{const k=getK(p.kid);return`<tr><td>${empCell(k)}</td><td>${badgeJenis(p.jenis)}</td><td>${dur(p.mulai,p.selesai)} hari</td><td>${badgeStatus(p.status)}</td><td style="display:flex;gap:6px">${p.status==='Pending'?`<button class="btn btn-accent" style="padding:5px 10px;font-size:.7rem" onclick="approve(${p.id})">✓</button><button class="btn btn-ghost" style="padding:5px 10px;font-size:.7rem" onclick="reject(${p.id})">✗</button>`:'<span style="font-size:.75rem;color:var(--muted)">—</span>'}</td></tr>`}).join('');
+}
+
+function renderJatah(){
+  const el=document.getElementById('jatahList');
+  el.innerHTML=karyawan.map(k=>{const sisa=k.jatah-k.terpakai;const pct=Math.round((k.terpakai/k.jatah)*100);return`<div class="jatah-row"><div class="jatah-emp"><div class="jatah-name">${k.nama}</div><div class="jatah-dept">${k.dept}</div></div><div class="jatah-bar-wrap"><div class="jatah-bar-fill" style="width:${pct}%"></div></div><div class="jatah-num">${sisa}/<span style="color:var(--muted)">${k.jatah}</span></div></div>`}).join('');
+}
+
+function renderAll(){
+  const body=document.getElementById('allBody');
+  body.innerHTML=[...pengajuan].reverse().map(p=>{const k=getK(p.kid);return`<tr><td>${empCell(k)}</td><td>${badgeJenis(p.jenis)}</td><td>${fmtDate(p.mulai)}</td><td>${fmtDate(p.selesai)}</td><td>${dur(p.mulai,p.selesai)} hari</td><td style="font-size:.8rem;color:var(--muted);max-width:160px">${p.alasan}</td><td>${badgeStatus(p.status)}</td><td style="display:flex;gap:6px">${p.status==='Pending'?`<button class="btn btn-accent" style="padding:5px 10px;font-size:.7rem" onclick="approve(${p.id})">✓ Setuju</button><button class="btn btn-ghost" style="padding:5px 10px;font-size:.7rem" onclick="reject(${p.id})">✗</button>`:'<span style="font-size:.75rem;color:var(--muted)">—</span>'}</td></tr>`}).join('');
+}
+
+function renderKaryawan(){
+  const body=document.getElementById('karyawanBody');
+  body.innerHTML=karyawan.map(k=>{const sisa=k.jatah-k.terpakai;const pct=Math.round((k.terpakai/k.jatah)*100);return`<tr><td>${empCell(k)}</td><td>${k.dept}</td><td>${k.jatah} hari</td><td>${k.terpakai} hari</td><td style="font-weight:600;color:${sisa<4?'var(--red)':sisa<7?'var(--accent2)':'var(--green)'}">${sisa} hari</td><td style="width:160px"><div style="height:6px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct>75?'var(--red)':pct>50?'var(--accent2)':'var(--accent)'};border-radius:99px"></div></div></td></tr>`}).join('');
+}
+
+let calYear=2025,calMonth=6;
+function renderCalendar(){
+  const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  document.getElementById('calMonthLabel').textContent=`${months[calMonth]} ${calYear}`;
+  const grid=document.getElementById('calGrid');
+  const days=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  const today=new Date();
+  const first=new Date(calYear,calMonth,1).getDay();
+  const total=new Date(calYear,calMonth+1,0).getDate();
+  let html=days.map(d=>`<div class="cal-head">${d}</div>`).join('');
+  for(let i=0;i<first;i++)html+=`<div></div>`;
+  for(let d=1;d<=total;d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const hasCuti=pengajuan.some(p=>p.status==='Approved'&&ds>=p.mulai&&ds<=p.selesai);
+    html+=`<div class="cal-day${isToday?' today':''}${hasCuti?' has-cuti':''}">${d}</div>`;
+  }
+  grid.innerHTML=html;
+  const evs=document.getElementById('calEventList');
+  const thisMonth=pengajuan.filter(p=>p.mulai.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`));
+  evs.innerHTML=thisMonth.length?thisMonth.map(p=>{const k=getK(p.kid);return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="emp-av ${k.avc}" style="flex-shrink:0">${k.av}</div><div style="flex:1"><div style="font-weight:500;font-size:.85rem">${k.nama}</div><div style="font-size:.72rem;color:var(--muted)">${fmtDate(p.mulai)} — ${fmtDate(p.selesai)} · ${dur(p.mulai,p.selesai)} hari</div></div>${badgeStatus(p.status)}</div>`}).join(''):`<div style="color:var(--muted);font-size:.875rem;text-align:center;padding:20px">Tidak ada cuti bulan ini</div>`;
+}
+
+function changeMonth(d){calMonth+=d;if(calMonth<0){calMonth=11;calYear--}if(calMonth>11){calMonth=0;calYear++}renderCalendar()}
+
+function updateStats(){
+  document.getElementById('statPending').textContent=pengajuan.filter(p=>p.status==='Pending').length;
+  document.getElementById('statApproved').textContent=pengajuan.filter(p=>p.status==='Approved').length;
+}
+
+function approve(id){const p=pengajuan.find(x=>x.id===id);if(p){p.status='Approved';const k=getK(p.kid);k.terpakai+=dur(p.mulai,p.selesai);renderAll();renderRecent();renderJatah();renderKaryawan();updateStats();toast('✓ Cuti '+getK(p.kid).nama+' disetujui!')}}
+function reject(id){const p=pengajuan.find(x=>x.id===id);if(p){p.status='Rejected';renderAll();renderRecent();updateStats();toast('✗ Pengajuan ditolak')}}
+
+function showPage(name){
+  document.querySelectorAll('[id^="page-"]').forEach(el=>el.style.display='none');
+  document.getElementById('page-'+name).style.display='';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const titles={dashboard:['DASHBOARD CUTI','Ringkasan status cuti karyawan'],pengajuan:['PENGAJUAN CUTI','Kelola semua pengajuan cuti karyawan'],kalender:['KALENDER CUTI','Visualisasi jadwal cuti bulanan'],karyawan:['DATA KARYAWAN','Jatah dan sisa cuti per karyawan'],rekap:['REKAP CUTI','Laporan penggunaan cuti tahunan']};
+  document.getElementById('pageTitle').textContent=titles[name][0];
+  document.getElementById('pageSub').textContent=titles[name][1];
+  if(name==='kalender')renderCalendar();
+  if(name==='karyawan')renderKaryawan();
+  if(name==='pengajuan')renderAll();
+}
+
+function openModal(){
+  const sel=document.getElementById('fKaryawan');
+  sel.innerHTML='<option value="">— Pilih Karyawan —</option>'+karyawan.map(k=>`<option value="${k.id}">${k.nama} (${k.dept})</option>`).join('');
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('fMulai').value=today;
+  document.getElementById('fSelesai').value=today;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(e){if(e.target===document.getElementById('overlay'))closeModalDirect()}
+function closeModalDirect(){document.getElementById('overlay').classList.remove('show')}
+
+function submitCuti(){
+  const kid=+document.getElementById('fKaryawan').value;
+  const jenis=document.getElementById('fJenis').value;
+  const mulai=document.getElementById('fMulai').value;
+  const selesai=document.getElementById('fSelesai').value;
+  const alasan=document.getElementById('fAlasan').value;
+  if(!kid||!jenis||!mulai||!selesai){toast('⚠ Lengkapi semua field dulu!');return}
+  pengajuan.push({id:pidCounter++,kid,jenis,mulai,selesai,alasan:alasan||'—',status:'Pending'});
+  renderRecent();updateStats();renderAll();
+  closeModalDirect();
+  toast('✓ Pengajuan cuti berhasil dikirim!');
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+renderRecent();renderJatah();updateStats();
+</script>
+</body>
+</html>
